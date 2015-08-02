@@ -1,5 +1,5 @@
 ﻿using System;
-
+using Connectivity.Plugin;
 using Xamarin.Forms;
 
 namespace NetStatus
@@ -9,26 +9,32 @@ namespace NetStatus
         public App()
         {
             // The root page of your application
-            MainPage = new ContentPage
-            {
-                Content = new StackLayout
-                {
-                    VerticalOptions = LayoutOptions.Center,
-                    Children =
-                    {
-                        new Label
-                        {
-                            XAlign = TextAlignment.Center,
-                            Text = "Welcome to Xamarin Forms!"
-                        }
-                    }
-                }
-            };
+//            if (CrossConnectivity.Current.IsConnected)
+//            {
+//                MainPage = new NetworkViewPage();
+//            }
+//            else
+//            {
+//                MainPage = new NoNetworkPage();
+//            }
+            MainPage = new NetworkViewPage();
         }
 
         protected override void OnStart()
         {
-            // Handle when your app starts
+            CrossConnectivity.Current.ConnectivityChanged += CrossConnectivity_Current_ConnectivityChanged;
+        }
+
+        void CrossConnectivity_Current_ConnectivityChanged (object sender, Connectivity.Plugin.Abstractions.ConnectivityChangedEventArgs e)
+        {
+            if (e.IsConnected)
+            {
+                MainPage = new NetworkViewPage();
+            }
+            else
+            {
+                MainPage = new NoNetworkPage();
+            }
         }
 
         protected override void OnSleep()
